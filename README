@@ -1,0 +1,22 @@
+LicenseCheck
+============
+
+Scan files to identify files with bad or missing license headers.
+
+
+Building
+--------
+
+    dotnet build -c Release
+
+
+Running
+-------
+
+    dotnet ./bin/Release/netcoreapp2.0/LicenseCheck.dll
+
+License
+-------
+
+This project is licensed under the GNU GPL License. See the LICENSE file for
+details.
