@@ -1,0 +1,9 @@
+<Project>
+
+  <PropertyGroup>
+    <NetTestSdkVersion>15.3.0-preview-20170628-02</NetTestSdkVersion>
+    <XUnitVersion>2.2.0</XUnitVersion>
+    <XUnitRunnerVersion>2.2.0</XUnitRunnerVersion>
+  </PropertyGroup>
+
+</Project>
