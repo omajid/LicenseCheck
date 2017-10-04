@@ -13,4 +13,8 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XUnitRunnerVersion)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LicenseCheck\LicenseCheck.csproj" />
+  </ItemGroup>
+
 </Project>

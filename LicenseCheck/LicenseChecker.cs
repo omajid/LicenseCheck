@@ -6,7 +6,7 @@ namespace LicenseCheck
     public class LicenseChecker
     {
 
-        private static string[] LICENSES = {
+        private static string[] LICENSE_PREFIXES = {
             // Apache
             "Copyright (c) Microsoft. All Rights Reserved. Licensedf under the Apache License, Version 2.0. See License.txt in the project root for license information.",
             "Copyright (c) Microsoft. All Rights Reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.",
@@ -47,7 +47,6 @@ namespace LicenseCheck
             "The .NET Foundation licenses this file to you under the MIT license. See the LICENSE file in the project root for more information.",
 
             // Unknown
-            "Copyright (c) Microsoft. All rights reserved.", // TODO too generic with a StartsWith clause
             "Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.",
             "----------------------------------------------------------------------- <copyright file=\"{0}\" company=\"Microsoft\"> Copyright (c) Microsoft Corporation. All rights reserved. </copyright>",
             "------------------------------------------------------------------------------ <copyright file=\"{0}\" company=\"Microsoft\"> Copyright (c) Microsoft Corporation. All rights reserved. </copyright>",
@@ -57,6 +56,10 @@ namespace LicenseCheck
             "------------------------------------------------------------------------------ <copyright file=\"{0}\" company=\"Microsoft\"> Copyright © Microsoft. All Rights Reserved. </copyright>",
             "jQuery validation plug-in 1.6  http://bassistance.de/jquery-plugins/jquery-plugin-validation/ http://docs.jquery.com/Plugins/Validation  Copyright (c) 2006 - 2008 Jörn Zaefferer",
             "Licensed to the .NET Foundation under one or more agreements. See the LICENSE file in the project root for more information.",
+        };
+
+        private static string[] LICENSES = {
+            "Copyright (c) Microsoft. All rights reserved.",
         };
 
         private static string[] NOT_LICENSES =
@@ -91,6 +94,11 @@ namespace LicenseCheck
                 return new LicenseCheckResult() { License = LicenseType.DontKnowHowToParseThisFile, File = file, IdentifiedType = FileType.Unknown , OptionalDetails = null};
             }
 
+            return Check(file, fileType, licenseHeader);
+        }
+
+        public LicenseCheckResult Check(FilePath file, FileType fileType, string licenseHeader)
+        {
             licenseHeader = RemoveBogusLicenseHeader(licenseHeader, file);
 
             if (string.IsNullOrEmpty(licenseHeader))
@@ -101,13 +109,26 @@ namespace LicenseCheck
             else
             { 
                 bool found = false;
-                foreach (var license in LICENSES)
+                foreach (var license in LICENSE_PREFIXES)
                 {
                     var licenseText = String.Format(license, file.GetFileName());
-                    //stdout.WriteLine(licenseText);
                     if (licenseHeader.StartsWith(licenseText))
                     {
                         found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    foreach (var license in LICENSES)
+                    {
+                        var licenseText = String.Format(license, file.GetFileName());
+                        if (licenseHeader.Equals(licenseText))
+                        {
+                            found = true;
+                            break;
+                        }
                     }
                 }
 
