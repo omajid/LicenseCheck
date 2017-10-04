@@ -7,9 +7,11 @@ release:
 
 .PHONY: check
 check:
-	cd LicenseCheck.Test.Unit && dotnet test
-	cd LicenseCheck.Test.Integration && dotnet test
+	dotnet test LicenseCheck.Test.Unit
+	dotnet test LicenseCheck.Test.Integration
 
 .PHONY: clean
 clean:
-	git clean -xdf
+	rm -rf LicenseCheck/bin LicenseCheck/obj
+	rm -rf LicenseCheck.Test.Unit/bin LicenseCheck.Test.Unit/obj
+	rm -rf LicenseCheck.Test.Integration/bin LicenseCheck.Test.Integration/obj
