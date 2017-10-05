@@ -200,7 +200,7 @@ namespace LicenseCheck
         {
             if (Directory.Exists(path))
             {
-                ScanDirectory(path, action, stdout, stderr);    
+                ScanDirectory(path, action, stdout, stderr);
             }
             else if (File.Exists(path))
             {

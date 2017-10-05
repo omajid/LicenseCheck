@@ -6,10 +6,9 @@ using System.IO;
 namespace LicenseCheck
 {
 
-    public class CommentExtractor
+    public static class CommentExtractor
     {
-
-        public string ExtractFirstInlineComment(FilePath sourceCodeFile, string commentPrefix)
+        public static string ExtractFirstInlineComment(FilePath sourceCodeFile, string commentPrefix)
         {
             using (StreamReader sourceCodeStream = sourceCodeFile.Read())
             {
@@ -17,7 +16,7 @@ namespace LicenseCheck
             }
         }
 
-        public string ExtractFirstInlineComment(TextReader sourceCodeStream, string commentPrefix)
+        public static string ExtractFirstInlineComment(TextReader sourceCodeStream, string commentPrefix)
         {
             string[] firstCommentLines = ExtractFirstInlineCommentLines(sourceCodeStream, commentPrefix);
             string[] firstRealCommentLines = StripShebangLine(firstCommentLines);
@@ -27,7 +26,7 @@ namespace LicenseCheck
             return cleanedUpHeader;
         }
 
-        private string[] ExtractFirstInlineCommentLines(TextReader sourceCodeStream, string commentPrefix)
+        private static string[] ExtractFirstInlineCommentLines(TextReader sourceCodeStream, string commentPrefix)
         {
             List<string> lines = new List<string>();
             string line = sourceCodeStream.ReadLine();
@@ -60,7 +59,7 @@ namespace LicenseCheck
             return lines.ToArray();
         }
 
-        public string ExtractFirstBlockComment(FilePath file, string blockStart, string blockEnd, string optionalPrefix)
+        public static string ExtractFirstBlockComment(FilePath file, string blockStart, string blockEnd, string optionalPrefix)
         {
             using (StreamReader sourceCodeStream = file.Read())
             {
@@ -68,7 +67,7 @@ namespace LicenseCheck
             }
         }
 
-        public string ExtractFirstBlockComment(StreamReader sourceCodeStream, string blockStart, string blockEnd, string optionalPrefix)
+        public static string ExtractFirstBlockComment(StreamReader sourceCodeStream, string blockStart, string blockEnd, string optionalPrefix)
         {
             string[] firstCommentLines = ExtractFirstBlockCommentLines(sourceCodeStream, blockStart, blockEnd, optionalPrefix);
             string cleanedUpHeader = String.Join(" ", firstCommentLines).Trim();
@@ -76,7 +75,7 @@ namespace LicenseCheck
             return cleanedUpHeader;
         }
 
-        private string[] ExtractFirstBlockCommentLines(StreamReader sourceCodeStream, string start, string end, string optionalPrefix)
+        private static string[] ExtractFirstBlockCommentLines(StreamReader sourceCodeStream, string start, string end, string optionalPrefix)
         {
             // stdout.WriteLine("");
             List<string> lines = new List<string>();
@@ -133,7 +132,7 @@ namespace LicenseCheck
             return lines.ToArray();
         }
 
-        private string[] StripShebangLine(string[] lines)
+        private static string[] StripShebangLine(string[] lines)
         {
             List<string> result = new List<string>();
             foreach (var line in lines)
@@ -147,7 +146,7 @@ namespace LicenseCheck
             return result.ToArray();
         }
 
-        private string[] StripCommentCharacters(string[] lines, string commentPrefix)
+        private static string[] StripCommentCharacters(string[] lines, string commentPrefix)
         {
             string[] result = new string[lines.Length];
             for (int i = 0; i < lines.Length; i++)

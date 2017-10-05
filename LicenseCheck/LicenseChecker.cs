@@ -75,26 +75,20 @@ namespace LicenseCheck
 
         public LicenseCheckResult Check(FilePath file)
         {
-            string fileName = file.GetFileName();
+            FileTypeDef def = FileTypeDefs.getFileTypeDef(file);
 
-            FileType fileType = new FileTypeIdentifier().Identify(file);
-
-            var licenseHeaderExtractor = new LicenseHeaderExtractor();
-
-            string licenseHeader = licenseHeaderExtractor.Extract(file, fileType);
-
-            if (fileType == FileType.Unknown && (file.ContainsPath("/cpp/") ||
-                                                 file.ContainsPath("/inc/clr_std/")))
+            if (def == null)
             {
-                licenseHeader = licenseHeaderExtractor.Extract(file, FileType.C);
+                return new LicenseCheckResult() {
+                    License = LicenseType.DontKnowHowToParseThisFile,
+                    File = file,
+                    IdentifiedType = FileType.Unknown,
+                    OptionalDetails = null
+                };
             }
 
-            if (fileType == FileType.Unknown)
-            {
-                return new LicenseCheckResult() { License = LicenseType.DontKnowHowToParseThisFile, File = file, IdentifiedType = FileType.Unknown , OptionalDetails = null};
-            }
-
-            return Check(file, fileType, licenseHeader);
+            string licenseHeader = def.getLicenseHeader(file);
+            return Check(file, def.type, licenseHeader);
         }
 
         public LicenseCheckResult Check(FilePath file, FileType fileType, string licenseHeader)
@@ -104,10 +98,15 @@ namespace LicenseCheck
             if (string.IsNullOrEmpty(licenseHeader))
             {
                 // stdout.WriteLine("Missing license header in {0}", file);
-                return new LicenseCheckResult() { License = LicenseType.NoLicense, File = file, IdentifiedType = fileType, OptionalDetails = null};
+                return new LicenseCheckResult() {
+                    License = LicenseType.NoLicense,
+                    File = file,
+                    IdentifiedType = fileType,
+                    OptionalDetails = null
+                };
             }
             else
-            { 
+            {
                 bool found = false;
                 foreach (var license in LICENSE_PREFIXES)
                 {
@@ -134,11 +133,21 @@ namespace LicenseCheck
 
                 if (found)
                 {
-                    return new LicenseCheckResult() { License = LicenseType.ValidLicense, File = file, IdentifiedType = fileType, OptionalDetails = null};
+                    return new LicenseCheckResult() {
+                        License = LicenseType.ValidLicense,
+                        File = file,
+                        IdentifiedType = fileType,
+                        OptionalDetails = null
+                    };
                 }
                 else
                 {
-                    return new LicenseCheckResult() { License = LicenseType.UnknownLicense, File = file, IdentifiedType = fileType, OptionalDetails = licenseHeader};
+                    return new LicenseCheckResult() {
+                        License = LicenseType.UnknownLicense,
+                        File = file,
+                        IdentifiedType = fileType,
+                        OptionalDetails = licenseHeader
+                    };
                 }
             }
         }
