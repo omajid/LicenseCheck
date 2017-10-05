@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace LicenseCheck
 {
@@ -105,63 +106,44 @@ namespace LicenseCheck
                     OptionalDetails = null
                 };
             }
-            else
+
+            string filename = file.GetFileName();
+            bool found = LICENSE_PREFIXES.Any(
+                license => licenseHeader.StartsWith(string.Format(license, filename))
+            );
+            found = found || LICENSES.Any(
+                license => licenseHeader.Equals(string.Format(license, filename))
+            );
+
+            if (!found)
             {
-                bool found = false;
-                foreach (var license in LICENSE_PREFIXES)
-                {
-                    var licenseText = String.Format(license, file.GetFileName());
-                    if (licenseHeader.StartsWith(licenseText))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found)
-                {
-                    foreach (var license in LICENSES)
-                    {
-                        var licenseText = String.Format(license, file.GetFileName());
-                        if (licenseHeader.Equals(licenseText))
-                        {
-                            found = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (found)
-                {
-                    return new LicenseCheckResult() {
-                        License = LicenseType.ValidLicense,
-                        File = file,
-                        IdentifiedType = fileType,
-                        OptionalDetails = null
-                    };
-                }
-                else
-                {
-                    return new LicenseCheckResult() {
-                        License = LicenseType.UnknownLicense,
-                        File = file,
-                        IdentifiedType = fileType,
-                        OptionalDetails = licenseHeader
-                    };
-                }
+                // Return Unknown License
+                return new LicenseCheckResult() {
+                    License = LicenseType.UnknownLicense,
+                    File = file,
+                    IdentifiedType = fileType,
+                    OptionalDetails = licenseHeader
+                };
             }
+
+            return new LicenseCheckResult() {
+                License = LicenseType.ValidLicense,
+                File = file,
+                IdentifiedType = fileType,
+                OptionalDetails = null
+            };
         }
 
         private string RemoveBogusLicenseHeader(string licenseHeader, FilePath filePath)
         {
-            if (String.IsNullOrEmpty(licenseHeader))
+            if (string.IsNullOrEmpty(licenseHeader))
             {
                 return null;
             }
 
             foreach (var license in NOT_LICENSES)
             {
-                string text = String.Format(license, filePath.GetFileName());
+                string text = string.Format(license, filePath.GetFileName());
                 if (licenseHeader.StartsWith(text))
                 {
                     return null;

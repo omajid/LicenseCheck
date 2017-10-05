@@ -21,7 +21,7 @@ namespace LicenseCheck
             string[] firstCommentLines = ExtractFirstInlineCommentLines(sourceCodeStream, commentPrefix);
             string[] firstRealCommentLines = StripShebangLine(firstCommentLines);
             string[] firstCommentContents = StripCommentCharacters(firstRealCommentLines, commentPrefix);
-            string cleanedUpHeader = String.Join(" ", firstCommentContents).Trim();
+            string cleanedUpHeader = string.Join(" ", firstCommentContents).Trim();
             cleanedUpHeader = cleanedUpHeader.Replace("  ", " ");
             return cleanedUpHeader;
         }
@@ -70,7 +70,7 @@ namespace LicenseCheck
         public static string ExtractFirstBlockComment(StreamReader sourceCodeStream, string blockStart, string blockEnd, string optionalPrefix)
         {
             string[] firstCommentLines = ExtractFirstBlockCommentLines(sourceCodeStream, blockStart, blockEnd, optionalPrefix);
-            string cleanedUpHeader = String.Join(" ", firstCommentLines).Trim();
+            string cleanedUpHeader = string.Join(" ", firstCommentLines).Trim();
             cleanedUpHeader = cleanedUpHeader.Replace("  ", " ");
             return cleanedUpHeader;
         }
@@ -105,10 +105,8 @@ namespace LicenseCheck
                 lines.Add(line);
                 return lines.ToArray();
             }
-            else
-            {
-                lines.Add(line.Substring(line.IndexOf(start)+start.Length));
-            }
+
+            lines.Add(line.Substring(line.IndexOf(start)+start.Length));
 
             line = sourceCodeStream.ReadLine()?.Trim();
             while ((line != null))
@@ -156,7 +154,6 @@ namespace LicenseCheck
                 {
                     Debug.Assert(false, "Comment doesnt start with comment char!");
                 }
-                temp = temp.Remove(0, commentPrefix.Length).Trim();
                 while (temp.StartsWith(commentPrefix))
                 {
                     temp = temp.Remove(0, commentPrefix.Length).Trim();

@@ -7,7 +7,7 @@ namespace LicenseCheck
 {
     public class Program
     {
-        public static String Usage => "usage: dotnet run /path/to/dir/to/scan [/path/to/more/dirs]";
+        public static string Usage => "usage: dotnet run /path/to/dir/to/scan [/path/to/more/dirs]";
 
         public static void Main(string[] args)
         {
