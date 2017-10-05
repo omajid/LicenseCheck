@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace LicenseCheck
 {
@@ -219,10 +220,9 @@ namespace LicenseCheck
             {
                 ScanDirectory(subdir, action, stdout, stderr);
             }
-            foreach (var file in Directory.GetFiles(dir))
-            {
+            Parallel.ForEach<String>(Directory.GetFiles(dir), file => {
                 ScanFile(file, action, stdout, stderr);
-            }
+            });
         }
 
         private void ScanFile(string file, Action<string> action, TextWriter stdout, TextWriter stderr)
