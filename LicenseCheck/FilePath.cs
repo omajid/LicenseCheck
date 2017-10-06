@@ -6,7 +6,7 @@ namespace LicenseCheck
     public sealed class FilePath
     {
         private string underlyingPath;
-        
+
         public FilePath(string path)
         {
             underlyingPath = path;

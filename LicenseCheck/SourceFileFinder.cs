@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace LicenseCheck
 {
@@ -200,7 +202,7 @@ namespace LicenseCheck
         {
             if (Directory.Exists(path))
             {
-                ScanDirectory(path, action, stdout, stderr);    
+                ScanDirectory(path, action, stdout, stderr);
             }
             else if (File.Exists(path))
             {
@@ -219,40 +221,27 @@ namespace LicenseCheck
             {
                 ScanDirectory(subdir, action, stdout, stderr);
             }
-            foreach (var file in Directory.GetFiles(dir))
-            {
+            Parallel.ForEach<string>(Directory.GetFiles(dir), file => {
                 ScanFile(file, action, stdout, stderr);
-            }
+            });
         }
 
         private void ScanFile(string file, Action<string> action, TextWriter stdout, TextWriter stderr)
         {
-            foreach (var path in PATH_COMPONENTS_TO_IGNORE)
-            {
-                if (file.Contains(path))
-                {
-                    return;
-                }
+            if ( PATH_COMPONENTS_TO_IGNORE.Any(path => file.Contains(path)) ) {
+                return;
             }
 
-            foreach (var suffix in FILE_SUFFIXES_TO_IGNORE)
-            {
-                if (file.EndsWith(suffix))
-                {
-                    return;
-                }
+            if ( FILE_SUFFIXES_TO_IGNORE.Any(suffix => file.EndsWith(suffix)) ) {
+                return;
             }
 
-            foreach (var fileName in FILE_NAMES_TO_IGNORE)
-            {
-                if (file.EndsWith("/" + fileName))
-                {
-                    return;
-                }
+            if ( FILE_NAMES_TO_IGNORE.Any(name => file.EndsWith("/" + name)) ) {
+                return;
             }
 
             action(file);
         }
 
-}
+    }
 }
