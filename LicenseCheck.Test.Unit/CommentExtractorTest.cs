@@ -86,7 +86,7 @@ namespace LicenseCheck.Test.Unit
         {
             using (TextReader reader = new StringReader(sourceText))
             {
-                return new CommentExtractor().ExtractFirstInlineComment(reader, commentPrefix);
+                return CommentExtractor.ExtractFirstInlineComment(reader, commentPrefix);
             }
         }
 
