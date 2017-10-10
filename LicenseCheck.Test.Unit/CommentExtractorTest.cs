@@ -59,6 +59,17 @@ FOO
             Assert.Equal("FOO", commentContent);
         }
 
+        [Fact]
+        private void SourceContainsBlockCommentWhichContainsInlineComment()
+        {
+            var comment =
+@"<!--
+// FOO
+-->";
+            var commentContent = ExtractFirstBlockComment(comment, "<!--", "-->");
+            Assert.Equal("FOO", commentContent);
+        }
+
         private string ExtractFirstBlockComment(string sourceText, string commentStart, string commentEnd)
         {
             using (TextReader reader = new StringReader(sourceText))

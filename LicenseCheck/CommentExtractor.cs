@@ -95,7 +95,7 @@ namespace LicenseCheck
                 line = line.Substring(startPosition, length);
                 if (LineHasContent(line, optionalPrefix))
                 {
-                    lines.Add(line);
+                    lines.Add(CleanLine(line));
                 }
                 return lines.ToArray();
             }
@@ -103,7 +103,7 @@ namespace LicenseCheck
             line = line.Substring(line.IndexOf(start)+start.Length);
             if (LineHasContent(line, optionalPrefix))
             {
-                lines.Add(line);
+                lines.Add(CleanLine(line));
             }
 
             line = sourceCodeStream.ReadLine()?.Trim();
@@ -122,7 +122,7 @@ namespace LicenseCheck
                 }
                 if (LineHasContent(line, optionalPrefix))
                 {
-                    lines.Add(line);
+                    lines.Add(CleanLine(line));
                 }
                 if (foundEnd) break;
                 line = sourceCodeStream.ReadLine()?.Trim();
@@ -143,6 +143,15 @@ namespace LicenseCheck
                      line.StartsWith(commentPrefix + "+++++") ||
                      line.StartsWith(commentPrefix + "+----") ||
                      line.StartsWith(commentPrefix + "/////"));
+        }
+
+        private static string CleanLine(string line)
+        {
+            if (line.StartsWith("//"))
+            {
+                line = line.Substring("//".Length);
+            }
+            return line;
         }
 
         private static string[] StripShebangLine(string[] lines)
