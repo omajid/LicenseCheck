@@ -140,6 +140,17 @@ FOO
             Assert.Equal("Foo", commentContent);
         }
 
+        [Fact]
+        private void ShebangIsNotPartOfMultilineComment()
+        {
+            var comment =
+@"#!/foo
+# Bar
+Code";
+            var commentContent = ExtractFirstInlineComment(comment, "#");
+            Assert.Equal("Bar", commentContent);
+        }
+
         private string ExtractFirstInlineComment(string sourceText, string commentPrefix)
         {
             using (TextReader reader = new StringReader(sourceText))
