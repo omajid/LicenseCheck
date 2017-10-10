@@ -60,6 +60,44 @@ FOO
         }
 
         [Fact]
+        private void SourceContainsBlockCommentWithOnlyLinesOfDashes()
+        {
+            var comment = @"/*
+---------
+---------
+*/";
+            var commentContent = ExtractFirstBlockComment(comment, "/*", "*/");
+            Assert.Equal("", commentContent);
+        }
+
+        [Fact]
+        private void SourceContainsBlockCommentWithOneLineOfDashes()
+        {
+            var comment = @"(* --------------------------- *)";
+            var commentContent = ExtractFirstBlockComment(comment, "(*", "*)");
+            Assert.Equal("", commentContent);
+        }
+
+        [Fact]
+        private void SourceContainsBlockCommentWithOneLineOfEquals()
+        {
+            var comment = @"(*========================================================================*)";
+            var commentContent = ExtractFirstBlockComment(comment, "(*", "*)");
+            Assert.Equal("", commentContent);
+        }
+
+        [Fact(Skip="TODO")]
+        private void SourceContainsBlockCommentWithLinesPrefixedWithStars()
+        {
+            var comment =
+@"(* --------------------------------------------------------------------
+  * Nested letrecs
+  * -------------------------------------------------------------------- *)";
+            var commentContent = ExtractFirstBlockComment(comment, "(*", "*)");
+            Assert.Equal("Nested letrecs", commentContent);
+        }
+
+        [Fact]
         private void SourceContainsBlockCommentWhichContainsInlineComment()
         {
             var comment =
@@ -129,6 +167,17 @@ FOO
             Assert.Equal("License Info", commentContent);
         }
 
+        [Fact]
+        private void SourceContainsMultilineCommentThenSecondCommentWithSeparatorNoSpaces()
+        {
+            var comment =
+@"//License
+//Info
+//-----
+//This file is about foobar";
+            var commentContent = ExtractFirstInlineComment(comment, "//");
+            Assert.Equal("License Info", commentContent);
+        }
 
         [Fact]
         private void SourceContainsMultilineCommentThenSecondCommentWithSeparator()
@@ -160,6 +209,29 @@ FOO
 Code";
             var commentContent = ExtractFirstInlineComment(comment, "#");
             Assert.Equal("Bar", commentContent);
+        }
+
+        [Fact]
+        private void LineOfDashesShouldParseToEmptyComment()
+        {
+            var comment =
+@"//------------------------------------------------------------------------------";
+            var commentContent = ExtractFirstInlineComment(comment, "//");
+            Assert.Equal("", commentContent);
+        }
+
+        [Fact]
+        private void LinesOfDashesAreNotPartOfCommentContent()
+        {
+            var comment =
+@"//------------------------------------------------------------------------------
+// License
+//------------------------------------------------------------------------------
+//
+
+namespace System.Xml {";
+            var commentContent = ExtractFirstInlineComment(comment, "//");
+            Assert.Equal("License", commentContent);
         }
 
         private string ExtractFirstInlineComment(string sourceText, string commentPrefix)

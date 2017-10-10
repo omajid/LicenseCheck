@@ -42,7 +42,11 @@ namespace LicenseCheck
                 {
                     break;
                 }
-                lines.Add(line);
+
+                if (LineHasContent(line, commentPrefix))
+                {
+                    lines.Add(line);
+                }
                 line = sourceCodeStream.ReadLine()?.Trim();
                 readFirstLine = true;
             }
@@ -149,7 +153,11 @@ namespace LicenseCheck
         {
             if (line.StartsWith("//"))
             {
-                line = line.Substring("//".Length);
+                line = line.Substring("//".Length).Trim();
+            }
+            if (line.StartsWith("*"))
+            {
+                line = line.Substring("*".Length).Trim();
             }
             return line;
         }
