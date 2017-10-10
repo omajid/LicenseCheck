@@ -8,6 +8,64 @@ namespace LicenseCheck.Test.Unit
     public class CommentExtractorBlockCommentTest
     {
 
+        [Fact]
+        private void SourceContainsBlockComment()
+        {
+            var comment = @"<!-- DO NOT MODIFY this file -->";
+            var commentContent = ExtractFirstBlockComment(comment, "<!--", "-->");
+            Assert.Equal("DO NOT MODIFY this file", commentContent);
+        }
+
+        [Fact]
+        private void SourceContainsBlockCommentMultipleLines()
+        {
+            var comment = @"<!--
+DO NOT MODIFY this file -->";
+            var commentContent = ExtractFirstBlockComment(comment, "<!--", "-->");
+            Assert.Equal("DO NOT MODIFY this file", commentContent);
+        }
+
+        [Fact]
+        private void SourceContainsBlockCommentMultipleLinesWithDelimiterOnSeparateLines()
+        {
+            var comment = @"<!--
+DO NOT MODIFY this file
+-->";
+            var commentContent = ExtractFirstBlockComment(comment, "<!--", "-->");
+            Assert.Equal("DO NOT MODIFY this file", commentContent);
+        }
+
+        [Fact]
+        private void SourceContainsBlockCommentWithLinesOfStars()
+        {
+            var comment = @"<!--
+***********************************************************************************************
+Copyright (c) .NET Foundation. All rights reserved.
+***********************************************************************************************
+-->";
+            var commentContent = ExtractFirstBlockComment(comment, "<!--", "-->");
+            Assert.DoesNotContain("****", commentContent);
+        }
+
+        [Fact]
+        private void SourceContainsBlockCommentWithLinesOfDashes()
+        {
+            var comment = @"/*
+---------
+FOO
+---------
+*/";
+            var commentContent = ExtractFirstBlockComment(comment, "/*", "*/");
+            Assert.Equal("FOO", commentContent);
+        }
+
+        private string ExtractFirstBlockComment(string sourceText, string commentStart, string commentEnd)
+        {
+            using (TextReader reader = new StringReader(sourceText))
+            {
+                return CommentExtractor.ExtractFirstBlockComment(reader, commentStart, commentEnd, null);
+            }
+        }
 
     }
 

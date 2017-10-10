@@ -38,16 +38,7 @@ namespace LicenseCheck
 
             while ((line != null) && (line.StartsWith(commentPrefix)))
             {
-                if (readFirstLine &&
-                    (line.Equals(commentPrefix) ||
-                     line.StartsWith(commentPrefix + "=====") ||
-                     line.StartsWith(commentPrefix + " ====") ||
-                     line.StartsWith(commentPrefix + "*****") ||
-                     line.StartsWith(commentPrefix + "-----") ||
-                     line.StartsWith(commentPrefix + " ----") ||
-                     line.StartsWith(commentPrefix + "+++++") ||
-                     line.StartsWith(commentPrefix + "+----") ||
-                     line.StartsWith(commentPrefix + "/////")))
+                if (readFirstLine && !LineHasContent(line, commentPrefix))
                 {
                     break;
                 }
@@ -67,7 +58,7 @@ namespace LicenseCheck
             }
         }
 
-        public static string ExtractFirstBlockComment(StreamReader sourceCodeStream, string blockStart, string blockEnd, string optionalPrefix)
+        public static string ExtractFirstBlockComment(TextReader sourceCodeStream, string blockStart, string blockEnd, string optionalPrefix)
         {
             string[] firstCommentLines = ExtractFirstBlockCommentLines(sourceCodeStream, blockStart, blockEnd, optionalPrefix);
             string cleanedUpHeader = string.Join(" ", firstCommentLines).Trim();
@@ -75,7 +66,7 @@ namespace LicenseCheck
             return cleanedUpHeader;
         }
 
-        private static string[] ExtractFirstBlockCommentLines(StreamReader sourceCodeStream, string start, string end, string optionalPrefix)
+        private static string[] ExtractFirstBlockCommentLines(TextReader sourceCodeStream, string start, string end, string optionalPrefix)
         {
             // stdout.WriteLine("");
             List<string> lines = new List<string>();
@@ -102,11 +93,18 @@ namespace LicenseCheck
                 int endPosition = line.IndexOf(end);
                 int length = endPosition - startPosition;
                 line = line.Substring(startPosition, length);
-                lines.Add(line);
+                if (LineHasContent(line, optionalPrefix))
+                {
+                    lines.Add(line);
+                }
                 return lines.ToArray();
             }
 
-            lines.Add(line.Substring(line.IndexOf(start)+start.Length));
+            line = line.Substring(line.IndexOf(start)+start.Length);
+            if (LineHasContent(line, optionalPrefix))
+            {
+                lines.Add(line);
+            }
 
             line = sourceCodeStream.ReadLine()?.Trim();
             while ((line != null))
@@ -122,12 +120,29 @@ namespace LicenseCheck
                 {
                     line = line.Substring(optionalPrefix.Length);
                 }
-                lines.Add(line);
+                if (LineHasContent(line, optionalPrefix))
+                {
+                    lines.Add(line);
+                }
                 if (foundEnd) break;
                 line = sourceCodeStream.ReadLine()?.Trim();
             }
 
             return lines.ToArray();
+        }
+
+        private static bool LineHasContent(string line, string commentPrefix)
+        {
+
+            return !(line.Equals(commentPrefix) ||
+                     line.StartsWith(commentPrefix + "=====") ||
+                     line.StartsWith(commentPrefix + " ====") ||
+                     line.StartsWith(commentPrefix + "*****") ||
+                     line.StartsWith(commentPrefix + "-----") ||
+                     line.StartsWith(commentPrefix + " ----") ||
+                     line.StartsWith(commentPrefix + "+++++") ||
+                     line.StartsWith(commentPrefix + "+----") ||
+                     line.StartsWith(commentPrefix + "/////"));
         }
 
         private static string[] StripShebangLine(string[] lines)
