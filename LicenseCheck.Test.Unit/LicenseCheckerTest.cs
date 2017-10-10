@@ -38,6 +38,13 @@ namespace LicenseCheck.Test.Unit
             Assert.Equal(LicenseType.UnknownLicense, result.License);
         }
 
+        [Fact]
+        public void TodoIsNotALicense()
+        {
+            var licenseString = "TODO blah for Microsoft";
+            var result = new LicenseChecker().Check(new FilePath("ignore"), FileType.Unknown, licenseString);
+            Assert.Equal(LicenseType.NoLicense, result.License);
+        }
     }
 
 }
