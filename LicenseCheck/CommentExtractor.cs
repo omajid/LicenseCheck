@@ -145,7 +145,7 @@ namespace LicenseCheck
         {
             Regex separators = new Regex(@"(?:=|-|\+|\*|/){2,}");
             line = separators.Replace(line, "").Trim();
-            if (line.StartsWith("*"))
+            while (line.StartsWith("*"))
             {
                 line = line.Substring("*".Length).Trim();
             }

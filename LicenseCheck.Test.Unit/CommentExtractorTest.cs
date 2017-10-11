@@ -87,13 +87,20 @@ FOO
         }
 
         [Fact]
+        private void SourceContainsBlockCommentWithJustStars()
+        {
+            var comment = @"(* * * * *)";
+            var commentContent = ExtractFirstBlockComment(comment, "(*", "*)");
+            Assert.Equal("", commentContent);
+        }
+
+        [Fact]
         private void SourceContainsSingleLineBlockCommentWithExtraDashesBeforeText()
         {
             var comment = @"(* ----------------------- Foo *)";
             var commentContent = ExtractFirstBlockComment(comment, "(*", "*)");
             Assert.Equal("Foo", commentContent);
         }
-
 
         [Fact]
         private void SourceContainsSingleLineBlockCommentWithExtraDashesAfterText()
