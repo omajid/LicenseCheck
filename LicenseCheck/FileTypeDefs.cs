@@ -103,16 +103,31 @@ namespace LicenseCheck {
                     }
 
                     string[] ignore = {
-                        "#Regression",
+                        "#ByRef",
+                        "#CodeGen",
                         "#Conformance",
+                        "#Diagnostics",
+                        "#ErrorMessages",
+                        "#FSharpQA",
+                        "#FSI",
+                        "#Globalization",
+                        "#Import",
+                        "#in #BindingExpressions",
+                        "#inline #FSharpQA",
+                        "Learn more about F#",
                         "#Libraries",
-                        "#NoMT",
+                        "#Misc",
+                        "#NativePtr",
                         "#NoMono",
-                        "#Warnings",
-                        "[Test Strategy]",
-                        "[<StructuralComparison(true)>]",
+                        "#NoMT",
+                        "#OCaml",
+                        "#Query",
                         "[<ReferenceEquality(true)>]",
-                        "Learn more about F#"
+                        "#Regression",
+                        "[<StructuralComparison(true)>]",
+                        "[Test Strategy]",
+                        "#Warnings",
+                        "#XMLDoc",
                     };
                     if (ignore.Any( i => header.StartsWith(i) )) {
                         header = null;
