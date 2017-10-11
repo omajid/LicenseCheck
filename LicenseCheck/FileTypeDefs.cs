@@ -62,7 +62,7 @@ namespace LicenseCheck {
                     ".css.min"
                 },
                 getLicenseHeader: (file) => {
-                    return CommentExtractor.ExtractFirstBlockComment(file, "/*", "*/", "*");
+                    return CommentExtractor.ExtractFirstBlockComment(file, "/*", "*/");
                 }
             ),
             new FileTypeDef(
@@ -97,7 +97,7 @@ namespace LicenseCheck {
                     ".ml"
                 },
                 getLicenseHeader: (file) => {
-                    string header = CommentExtractor.ExtractFirstBlockComment(file, "(*", "*)", "*");
+                    string header = CommentExtractor.ExtractFirstBlockComment(file, "(*", "*)");
                     if ( string.IsNullOrEmpty(header) ) {
                         header = CommentExtractor.ExtractFirstInlineComment(file, "//");
                     }
@@ -127,7 +127,7 @@ namespace LicenseCheck {
                     ".js"
                 },
                 getLicenseHeader: (file) => {
-                    return CommentExtractor.ExtractFirstBlockComment(file, "/*", "*/", "*");
+                    return CommentExtractor.ExtractFirstBlockComment(file, "/*", "*/");
                 }
             ),
             new FileTypeDef(
@@ -189,7 +189,7 @@ namespace LicenseCheck {
                     ".vsdconfigxml"
                 },
                 getLicenseHeader: (file) => {
-                    return CommentExtractor.ExtractFirstBlockComment(file, "<!--", "-->", null);
+                    return CommentExtractor.ExtractFirstBlockComment(file, "<!--", "-->");
                 }
             ),
             new FileTypeDef(

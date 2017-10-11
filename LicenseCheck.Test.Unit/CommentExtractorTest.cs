@@ -86,7 +86,24 @@ FOO
             Assert.Equal("", commentContent);
         }
 
-        [Fact(Skip="TODO")]
+        [Fact]
+        private void SourceContainsSingleLineBlockCommentWithExtraDashesBeforeText()
+        {
+            var comment = @"(* ----------------------- Foo *)";
+            var commentContent = ExtractFirstBlockComment(comment, "(*", "*)");
+            Assert.Equal("Foo", commentContent);
+        }
+
+
+        [Fact]
+        private void SourceContainsSingleLineBlockCommentWithExtraDashesAfterText()
+        {
+            var comment = @"(* Foo ----------------------- *)";
+            var commentContent = ExtractFirstBlockComment(comment, "(*", "*)");
+            Assert.Equal("Foo", commentContent);
+        }
+
+        [Fact]
         private void SourceContainsBlockCommentWithLinesPrefixedWithStars()
         {
             var comment =
@@ -112,7 +129,7 @@ FOO
         {
             using (TextReader reader = new StringReader(sourceText))
             {
-                return CommentExtractor.ExtractFirstBlockComment(reader, commentStart, commentEnd, null);
+                return CommentExtractor.ExtractFirstBlockComment(reader, commentStart, commentEnd);
             }
         }
 

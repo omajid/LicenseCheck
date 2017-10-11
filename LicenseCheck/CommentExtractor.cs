@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace LicenseCheck
 {
@@ -38,14 +39,14 @@ namespace LicenseCheck
 
             while ((line != null) && (line.StartsWith(commentPrefix)))
             {
-                if (readFirstLine && !LineHasContent(line, commentPrefix))
+                if (readFirstLine && !LineHasContent(line))
                 {
                     break;
                 }
 
-                if (LineHasContent(line, commentPrefix))
+                if (LineHasContent(line))
                 {
-                    lines.Add(line);
+                    lines.Add(CleanLine(line));
                 }
                 line = sourceCodeStream.ReadLine()?.Trim();
                 readFirstLine = true;
@@ -54,25 +55,24 @@ namespace LicenseCheck
             return lines.ToArray();
         }
 
-        public static string ExtractFirstBlockComment(FilePath file, string blockStart, string blockEnd, string optionalPrefix)
+        public static string ExtractFirstBlockComment(FilePath file, string blockStart, string blockEnd)
         {
             using (StreamReader sourceCodeStream = file.Read())
             {
-                return ExtractFirstBlockComment(sourceCodeStream, blockStart, blockEnd, optionalPrefix);
+                return ExtractFirstBlockComment(sourceCodeStream, blockStart, blockEnd);
             }
         }
 
-        public static string ExtractFirstBlockComment(TextReader sourceCodeStream, string blockStart, string blockEnd, string optionalPrefix)
+        public static string ExtractFirstBlockComment(TextReader sourceCodeStream, string blockStart, string blockEnd)
         {
-            string[] firstCommentLines = ExtractFirstBlockCommentLines(sourceCodeStream, blockStart, blockEnd, optionalPrefix);
+            string[] firstCommentLines = ExtractFirstBlockCommentLines(sourceCodeStream, blockStart, blockEnd);
             string cleanedUpHeader = string.Join(" ", firstCommentLines).Trim();
             cleanedUpHeader = cleanedUpHeader.Replace("  ", " ");
             return cleanedUpHeader;
         }
 
-        private static string[] ExtractFirstBlockCommentLines(TextReader sourceCodeStream, string start, string end, string optionalPrefix)
+        private static string[] ExtractFirstBlockCommentLines(TextReader sourceCodeStream, string start, string end)
         {
-            // stdout.WriteLine("");
             List<string> lines = new List<string>();
             string line = sourceCodeStream.ReadLine()?.Trim();
             // look for block comment in first column (sans spaces) only
@@ -88,26 +88,23 @@ namespace LicenseCheck
 
             if (line.Contains(end))
             {
-                // stdout.WriteLine(line);
-                // stdout.WriteLine(line.Length);
-                // stdout.WriteLine(line.IndexOf(start));
-                // stdout.WriteLine(start.Length);
-                // stdout.WriteLine(line.IndexOf(end));
                 int startPosition = line.IndexOf(start) + start.Length;
                 int endPosition = line.IndexOf(end);
                 int length = endPosition - startPosition;
-                line = line.Substring(startPosition, length);
-                if (LineHasContent(line, optionalPrefix))
+                line = line.Substring(startPosition, length).Trim();
+                if (LineHasContent(line))
                 {
-                    lines.Add(CleanLine(line));
+                    line = CleanLine(line);
+                    lines.Add(line);
                 }
                 return lines.ToArray();
             }
 
-            line = line.Substring(line.IndexOf(start)+start.Length);
-            if (LineHasContent(line, optionalPrefix))
+            line = line.Substring(line.IndexOf(start)+start.Length).Trim();
+            if (LineHasContent(line))
             {
-                lines.Add(CleanLine(line));
+                line = CleanLine(line);
+                lines.Add(line);
             }
 
             line = sourceCodeStream.ReadLine()?.Trim();
@@ -117,16 +114,13 @@ namespace LicenseCheck
                 if (line.Contains(end))
                 {
                     foundEnd = true;
-                    line = line.Substring(0, line.IndexOf(end));
+                    line = line.Substring(0, line.IndexOf(end)).Trim();
                 }
 
-                if (optionalPrefix != null && line.StartsWith(optionalPrefix))
+                if (LineHasContent(line))
                 {
-                    line = line.Substring(optionalPrefix.Length);
-                }
-                if (LineHasContent(line, optionalPrefix))
-                {
-                    lines.Add(CleanLine(line));
+                    line = CleanLine(line);
+                    lines.Add(line);
                 }
                 if (foundEnd) break;
                 line = sourceCodeStream.ReadLine()?.Trim();
@@ -135,26 +129,22 @@ namespace LicenseCheck
             return lines.ToArray();
         }
 
-        private static bool LineHasContent(string line, string commentPrefix)
+        private static bool LineHasContent(string line)
         {
+            line = line.Trim();
+            if (string.IsNullOrEmpty(line))
+            {
+                return false;
+            }
 
-            return !(line.Equals(commentPrefix) ||
-                     line.StartsWith(commentPrefix + "=====") ||
-                     line.StartsWith(commentPrefix + " ====") ||
-                     line.StartsWith(commentPrefix + "*****") ||
-                     line.StartsWith(commentPrefix + "-----") ||
-                     line.StartsWith(commentPrefix + " ----") ||
-                     line.StartsWith(commentPrefix + "+++++") ||
-                     line.StartsWith(commentPrefix + "+----") ||
-                     line.StartsWith(commentPrefix + "/////"));
+            string separatorLines = @"^(?://|\*|!)? ?(?:=|-|\+|\*|/)+$";
+            return !Regex.IsMatch(line, separatorLines);
         }
 
         private static string CleanLine(string line)
         {
-            if (line.StartsWith("//"))
-            {
-                line = line.Substring("//".Length).Trim();
-            }
+            Regex separators = new Regex(@"(?:=|-|\+|\*|/){2,}");
+            line = separators.Replace(line, "").Trim();
             if (line.StartsWith("*"))
             {
                 line = line.Substring("*".Length).Trim();
@@ -182,10 +172,6 @@ namespace LicenseCheck
             for (int i = 0; i < lines.Length; i++)
             {
                 string temp = lines[i];
-                if (!temp.StartsWith(commentPrefix))
-                {
-                    Debug.Assert(false, "Comment doesnt start with comment char!");
-                }
                 while (temp.StartsWith(commentPrefix))
                 {
                     temp = temp.Remove(0, commentPrefix.Length).Trim();
