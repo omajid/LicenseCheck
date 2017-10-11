@@ -170,6 +170,10 @@ namespace LicenseCheck
             ".clang-format",
             "CMakeLists.txt",
             "cmake.definitions",
+            "copyright", // debian packaging
+            "control", // debian packaging
+            "compat", // debian packaging
+            "changelog", // debian packaging
             ".editorconfig",
             ".gitattributes",
             ".gitignore",
@@ -184,7 +188,9 @@ namespace LicenseCheck
             "nuget.config",
             "Nuget.Config",
             "NuGet.Config",
+            "postinstall", // debian packaging
             "PULL_REQUEST_TEMPLATE",
+            "rules", // debian packaging
             "SOURCES",
             "sources.list.jessie",
             "sources.list.trusty",
