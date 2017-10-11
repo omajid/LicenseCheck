@@ -42,5 +42,17 @@ namespace LicenseCheck.Test.Integration
             Assert.Equal("Missing license header in ../../../FileWithMissingLicenseHeader.vb\n", stdout.ToString());
             Assert.Equal("", stderr.ToString());
         }
+
+        [Fact]
+        public void CSharpFileWithBOMAndValidHeaderWorks()
+        {
+            var stdout = new StringWriter();
+            var stderr = new StringWriter();
+
+            LicenseCheck.Program.FindSourcesAndCheckLicenseHeaders(new string[] {"../../../FileWithBOMAndValidHeader.cs" }, stdout, stderr);
+
+            Assert.Equal("", stdout.ToString());
+            Assert.Equal("", stderr.ToString());
+        }
     }
 }
