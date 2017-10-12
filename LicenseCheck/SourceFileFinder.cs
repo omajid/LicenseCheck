@@ -223,6 +223,11 @@ namespace LicenseCheck
 
         private void ScanDirectory(string dir, Action<string> action, TextWriter stdout, TextWriter stderr)
         {
+            if (DIR_NAMES_TO_IGNORE.Any(toIgnore => new DirectoryInfo(dir).Name.Equals(toIgnore)))
+            {
+                return;
+            }
+
             foreach (var subdir in Directory.GetDirectories(dir))
             {
                 ScanDirectory(subdir, action, stdout, stderr);
