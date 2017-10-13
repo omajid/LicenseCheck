@@ -41,8 +41,8 @@ namespace LicenseCheck
                 stdout.WriteLine("Missing license header in {0}", file);
                 break;
             case LicenseType.UnknownLicense:
-                stdout.WriteLine("Unknown license header: {0}", file);
-                stdout.WriteLine(result.OptionalDetails);
+                stdout.WriteLine("Unknown license header: {1}{0}{2}",
+                    Environment.NewLine, file, result.OptionalDetails);
                 break;
             case LicenseType.DontKnowHowToParseThisFile:
                 stdout.WriteLine("Dont know how to parse {0}", file);
