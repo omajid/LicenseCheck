@@ -7,7 +7,7 @@ namespace LicenseCheck
     public class LicenseChecker
     {
 
-        private static string[] LICENSE_PREFIXES = {
+        private static string[] PREFIXES_LICENSE = {
             // Apache
             "Copyright (c) Microsoft. All Rights Reserved. Licensedf under the Apache License, Version 2.0. See License.txt in the project root for license information.",
             "Copyright (c) Microsoft. All Rights Reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information,",
@@ -71,7 +71,10 @@ namespace LicenseCheck
         };
 
         private static string[] LICENSES = {
+            "{0} WARNING: DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have created a backup copy. Incorrect changes to this file will make it impossible to load or build your projects from the command-line or the IDE. Copyright (C) Microsoft Corporation. All rights reserved.",
             "{0} WARNING: DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have created a backup copy. Incorrect changes to this file will make it impossible to load or build your projects from the command-line or the IDE. Copyright (c) .NET Foundation. All rights reserved.",
+            "{0} WARNING: DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have created a backup copy. Incorrect changes to this file will make it impossible to load or build your web deploy projects from the command-line or the IDE. This file defines the steps in the standard build process to deploy web application projects. Copyright (C) Microsoft Corporation. All rights reserved.",
+            "{0} WARNING: DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have created a backup copy. Incorrect changes to this file will make it impossible to load or build your web deploy projects from the command-line or the IDE. This file defines the steps in the standard package/publish process for collecting only files to run the web appliation. Copyright (C) Microsoft Corporation. All rights reserved.",
             "(c) Microsoft Corporation 2005-2008.",
             "(c) Microsoft Corporation 2005-2009.",
             "Copyright (c) 2002-2012 Microsoft Corporation.",
@@ -88,7 +91,7 @@ namespace LicenseCheck
             "Unobtrusive validation support library for jQuery and jQuery Validate Copyright (C) Microsoft Corporation. All rights reserved.",
         };
 
-        private static string[] NOT_LICENSES =
+        private static string[] PREFIXES_NOT_LICENSE =
         {
             "{0} Declaration of the ",
             "{0} Implementation of the ",
@@ -105,6 +108,13 @@ namespace LicenseCheck
             "This test",
             "TODO",
             "Verify",
+        };
+
+        private static string[] NOT_LICENSES =
+        {
+            "{0}",
+            "Asserts",
+            "Timings",
         };
 
         public LicenseCheckResult Check(FilePath file)
@@ -141,7 +151,7 @@ namespace LicenseCheck
             }
 
             string filename = file.GetFileName();
-            bool found = LICENSE_PREFIXES.Any(
+            bool found = PREFIXES_LICENSE.Any(
                 license => licenseHeader.StartsWith(string.Format(license, filename))
             );
             found = found || LICENSES.Any(
@@ -174,14 +184,18 @@ namespace LicenseCheck
                 return null;
             }
 
-            foreach (var license in NOT_LICENSES)
+            string fileName = filePath.GetFileName();
+
+            if (PREFIXES_NOT_LICENSE.Any(license => licenseHeader.StartsWith(string.Format(license, fileName))))
             {
-                string text = string.Format(license, filePath.GetFileName());
-                if (licenseHeader.StartsWith(text))
-                {
-                    return null;
-                }
+                return null;
             }
+
+            if (NOT_LICENSES.Any(license => licenseHeader.Equals(string.Format(license, fileName))))
+            {
+                return null;
+            }
+
             return licenseHeader;
         }
 

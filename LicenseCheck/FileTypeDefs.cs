@@ -108,6 +108,7 @@ namespace LicenseCheck {
                         "#Conformance",
                         "#Diagnostics",
                         "#ErrorMessages",
+                        "<Expects>",
                         "#FSharpQA",
                         "#FSI",
                         "#Globalization",
