@@ -103,12 +103,13 @@ namespace LicenseCheck {
                     }
 
                     string[] ignore = {
+                        "#AccessibilityModifiers",
                         "#ByRef",
                         "#CodeGen",
                         "#Conformance",
                         "#Diagnostics",
                         "#ErrorMessages",
-                        "<Expects>",
+                        "<Expects ",
                         "#FSharpQA",
                         "#FSI",
                         "#Globalization",
@@ -122,11 +123,16 @@ namespace LicenseCheck {
                         "#NoMono",
                         "#NoMT",
                         "#OCaml",
+                        "#Quotations",
                         "#Query",
                         "[<ReferenceEquality(true)>]",
                         "#Regression",
+                        "[<Struct>]",
                         "[<StructuralComparison(true)>]",
+                        "[<StructuralEquality(true)>]",
+                        "[<Test>]",
                         "[Test Strategy]",
+                        "#UnitGenericAbstractType",
                         "#Warnings",
                         "#XMLDoc",
                     };
